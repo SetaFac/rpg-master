@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* RPG Master — servidor da mesa online (sem dependências; precisa só do Node.js 16+)
-   Uso:  node servidor.js [--porta 3000] [--chave ABC123] [--senha segredo] [--arquivo RPG-Master.html]            */
+   Uso:  node servidor.js [--porta 3000] [--chave ABC123] [--senha segredo] [--arquivo ../app/RPG-Master.html]            */
 const http = require('http'),
   fs = require('fs'),
   path = require('path'),
@@ -14,8 +14,23 @@ const args = process.argv.slice(2),
 const PORT = +arg('porta', process.env.PORT || 3000),
   KEY = arg('chave', crypto.randomBytes(3).toString('hex')),
   PASS = arg('senha', '');
-
-const HTML = arg('arquivo', path.join(__dirname, 'RPG-Master.html'));
+const HTML = arg('arquivo', path.join(__dirname, '..', 'app', 'RPG-Master.html'));
+const PUBLIC_DIR = path.dirname(path.resolve(HTML)); // css/ e js/ são servidos a partir da pasta do HTML
+const MIME = {
+  '.html': 'text/html; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.svg': 'image/svg+xml',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif',
+  '.webp': 'image/webp',
+  '.ico': 'image/x-icon',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2',
+};
 let snap = null;
 const bgs = {},
   players = new Map(),
@@ -92,7 +107,7 @@ http
       if (p === '/' || p === '/index.html') {
         if (!fs.existsSync(HTML)) {
           res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-          return res.end('Coloque RPG-Master.html na mesma pasta do servidor.js');
+          return res.end('Não achei o RPG-Master.html. Ele deve ficar em app/RPG-Master.html (ao lado da pasta servidor/).');
         }
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
         return fs.createReadStream(HTML).pipe(res);
@@ -225,6 +240,15 @@ http
           return json(res, 200, { ok: true });
         }
         return json(res, 400, { ok: false });
+      }
+      if (req.method === 'GET') {
+        const file = path.join(PUBLIC_DIR, decodeURIComponent(p));
+        const dentroDaPasta = file.startsWith(PUBLIC_DIR + path.sep); // impede sair da pasta (../)
+        if (dentroDaPasta && fs.existsSync(file) && fs.statSync(file).isFile()) {
+          const mime = MIME[path.extname(file).toLowerCase()] || 'application/octet-stream';
+          res.writeHead(200, { 'Content-Type': mime, 'Cache-Control': 'no-store', ...CORS });
+          return fs.createReadStream(file).pipe(res);
+        }
       }
       res.writeHead(404, CORS);
       res.end();

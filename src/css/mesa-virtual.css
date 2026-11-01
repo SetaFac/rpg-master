@@ -1,0 +1,462 @@
+/* ===== RPG Master: avatar, som, mesa virtual ===== */
+#hud .avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid var(--accent2, var(--accent));
+  background: var(--card2);
+  color: var(--muted);
+  font-size: 1.3rem;
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+  flex: none;
+  display: grid;
+  place-items: center;
+}
+#hud .avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.tcard img.por {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--accent2, var(--accent));
+}
+.snd-chip {
+  font-size: 0.85em;
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#snddock {
+  position: fixed;
+  top: 54px;
+  right: 0;
+  bottom: 0;
+  width: min(390px, 100vw);
+  z-index: 45;
+  background: var(--card);
+  color: var(--ink);
+  border-left: 2px solid var(--accent2, var(--line));
+  box-shadow: -14px 0 40px -18px rgba(0, 0, 0, 0.65);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.snd-h {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 12px;
+  background: var(--head-bg, var(--card2));
+  color: var(--head-ink, var(--ink));
+}
+.snd-h .sp {
+  flex: 1;
+}
+.snd-h .btn {
+  color: inherit;
+}
+.snd-np {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.85em;
+  min-height: 40px;
+}
+.snd-mix {
+  padding: 8px 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.snd-sl {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.75em;
+  color: var(--muted);
+}
+.snd-sl input {
+  width: 100%;
+  accent-color: var(--accent);
+}
+.snd-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--line);
+}
+.snd-tabs button {
+  flex: 1;
+  padding: 9px 4px;
+  background: transparent;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.85em;
+}
+.snd-tabs button.on {
+  color: var(--ink);
+  border-bottom-color: var(--accent);
+  font-weight: 700;
+}
+.snd-body {
+  padding: 12px;
+  overflow: auto;
+  flex: 1;
+}
+.snd-pads {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 6px;
+}
+.snd-pad {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 4px 8px;
+  background: var(--card2);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8em;
+  text-align: center;
+}
+.snd-pad:hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, var(--card2));
+}
+.snd-pad:active {
+  transform: scale(0.96);
+}
+.snd-pad .ic {
+  font-size: 1.5em;
+  line-height: 1.1;
+}
+.snd-pad span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+.snd-pad kbd {
+  position: absolute;
+  top: 3px;
+  left: 5px;
+  font-size: 0.75em;
+  color: var(--muted);
+  font-family: var(--font-mono, monospace);
+}
+.snd-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.snd-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  background: var(--card2);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+.snd-row .ic {
+  font-size: 1.3em;
+}
+.snd-row b {
+  flex: 1;
+  font-weight: 600;
+}
+.snd-row .st {
+  color: var(--muted);
+  font-size: 0.85em;
+}
+.snd-row.on {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 18%, var(--card2));
+}
+.snd-row.on .st {
+  color: var(--accent);
+  font-weight: 700;
+}
+.snd-row.lib {
+  cursor: default;
+  padding: 5px 8px;
+  margin-bottom: 5px;
+}
+.snd-row.lib input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  padding: 4px;
+}
+.snd-row.lib .go {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--accent);
+  color: var(--accent-ink);
+  cursor: pointer;
+}
+.vtt {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 54px);
+  min-height: 480px;
+}
+.vtt-bar {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--card);
+  border-bottom: 1px solid var(--line);
+}
+.vtt-bar .sep {
+  width: 1px;
+  align-self: stretch;
+  background: var(--line);
+  margin: 0 4px;
+}
+.vtt-bar select {
+  max-width: 190px;
+}
+.vtt-main {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+.vtt-stage {
+  flex: 1;
+  position: relative;
+  min-width: 0;
+  background: #0b0b10;
+  overflow: hidden;
+}
+.vtt-stage canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: none;
+}
+.vtt-side {
+  width: 290px;
+  flex: none;
+  background: var(--card);
+  border-left: 1px solid var(--line);
+  overflow: auto;
+  padding: 12px;
+}
+.vtt-side h4 {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+}
+.vtt-side label.f {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 8px;
+  font-size: 0.82em;
+  color: var(--muted);
+}
+.vtt-side label.f input,
+.vtt-side label.f select {
+  background: var(--field);
+  border: 1px solid var(--field-line);
+  border-radius: calc(var(--radius) - 1px);
+  padding: 5px 7px;
+  color: var(--ink);
+  font: inherit;
+  width: 100%;
+}
+.vtt-turn {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.72);
+  color: #fff;
+  padding: 5px 14px;
+  border-radius: 99px;
+  font-size: 0.85em;
+  pointer-events: none;
+}
+.vtt-hint {
+  position: absolute;
+  left: 10px;
+  bottom: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #ddd;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-size: 0.75em;
+  pointer-events: none;
+}
+.vtt.present .vtt-bar,
+.vtt.present .vtt-side,
+.vtt.present .vtt-hint {
+  display: none;
+}
+.vtt-exit {
+  display: none;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 3;
+}
+.vtt.present .vtt-exit {
+  display: block;
+}
+.vtt.present {
+  height: 100vh;
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: #000;
+}
+.bg-gal {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.bg-gal button {
+  padding: 0;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card2);
+  color: var(--ink);
+  cursor: pointer;
+  overflow: hidden;
+  font: inherit;
+  font-size: 0.78em;
+}
+.bg-gal button.on {
+  border-color: var(--accent);
+}
+.bg-gal canvas {
+  display: block;
+  width: 100%;
+  height: 70px;
+}
+.vtt-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 6px 0;
+}
+.vtt-trow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  margin-bottom: 4px;
+  cursor: pointer;
+  background: var(--card2);
+  font-size: 0.88em;
+}
+.vtt-trow.sel {
+  border-color: var(--accent);
+}
+.vtt-trow img,
+.vtt-trow i {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: none;
+  border: 2px solid;
+}
+@media (max-width: 800px) {
+  .vtt-side {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    max-width: 85%;
+    z-index: 2;
+  }
+}
+.vtt-chat {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 290px;
+  max-width: 80%;
+  background: rgba(12, 14, 24, 0.86);
+  color: #eee;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+  font-size: 0.82em;
+  display: flex;
+  flex-direction: column;
+  z-index: 2;
+  backdrop-filter: blur(4px);
+}
+.vtt-chat.off {
+  display: none;
+}
+.vtt-chat .ch {
+  padding: 6px 10px;
+  font-weight: 700;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+.vtt-chat .cl {
+  max-height: 190px;
+  overflow: auto;
+  padding: 6px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.vtt-chat .cl .roll {
+  color: #ffd34d;
+}
+.vtt-chat .cl .gm b {
+  color: #8fd3ff;
+}
+.vtt-chat input {
+  background: rgba(255, 255, 255, 0.1);
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  padding: 7px 10px;
+  border-radius: 0 0 10px 10px;
+  font: inherit;
+}
+.vtt-chat.min .cl,
+.vtt-chat.min input {
+  display: none;
+}
+.net-chip {
+  font-size: 0.85em;
+}

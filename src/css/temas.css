@@ -1,0 +1,272 @@
+/* ===== Temas ===== */
+:root {
+  --radius: 4px;
+  --gap: 14px;
+  --pad: 14px;
+  --fs: 15px;
+  --font: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+  --font-mono: "Cascadia Mono", Consolas, "SF Mono", Menlo, monospace;
+  --bg: #cddcd8;
+  --card: #f3f6ef;
+  --card2: #e6eee8;
+  --ink: #12293a;
+  --muted: #5b7283;
+  --line: #9bb3b0;
+  --line2: #c3d3cf;
+  --accent: #b3322a;
+  --accent-ink: #fff7ec;
+  --accent2: #a67c1f;
+  --good: #2d7d4f;
+  --bad: #b3322a;
+  --field: #fbfcf8;
+  --field-line: #b4c6c2;
+  --head-bg: #12293a;
+  --head-ink: #f3f6ef;
+  --head-rule: #a67c1f;
+  --seal-bg: radial-gradient(circle at 35% 30%, #d9564b, #b3322a 55%, #8d221c);
+  --seal-ink: #fff7ec;
+  --seal-ring: rgba(255, 255, 255, 0.35);
+  --shadow: 0 1px 0 rgba(18, 41, 58, 0.08), 0 8px 22px -12px rgba(18, 41, 58, 0.35);
+  --top-bg: #12293a;
+  --top-ink: #eef4f1;
+  --texture:
+    linear-gradient(rgba(18, 41, 58, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(18, 41, 58, 0.05) 1px, transparent 1px);
+  --texture-size: 48px 48px;
+  --bar-bg: #cfdcd8;
+  --hp: #3f9a6a;
+  --pp: #3f78b5;
+}
+html[data-theme="oceano"] {
+  --bg: #061a26;
+  --card: rgba(13, 46, 66, 0.88);
+  --card2: rgba(8, 34, 50, 0.9);
+  --ink: #e6f0f2;
+  --muted: #8fb0be;
+  --line: #245068;
+  --line2: #17394c;
+  --accent: #f0b43c;
+  --accent-ink: #1b2a33;
+  --accent2: #58c4dd;
+  --good: #4cc38a;
+  --bad: #ff7a6b;
+  --field: rgba(4, 22, 33, 0.7);
+  --field-line: #2c5a73;
+  --head-bg: rgba(5, 26, 38, 0.95);
+  --head-ink: #f0e2b8;
+  --head-rule: #f0b43c;
+  --seal-bg: radial-gradient(circle at 35% 30%, #ffd57a, #f0b43c 55%, #c58a14);
+  --seal-ink: #1b2a33;
+  --seal-ring: rgba(0, 0, 0, 0.25);
+  --shadow: 0 10px 26px -14px rgba(0, 0, 0, 0.7);
+  --top-bg: #04141d;
+  --top-ink: #e6f0f2;
+  --texture:
+    radial-gradient(1200px 600px at 80% -10%, rgba(88, 196, 221, 0.14), transparent 60%),
+    linear-gradient(180deg, #0a2d42, #051722 70%);
+  --texture-size: auto;
+  --bar-bg: #0a2434;
+  --hp: #4cc38a;
+  --pp: #58c4dd;
+}
+html[data-theme="grimorio"] {
+  --font-display:
+    "Copperplate", "Copperplate Gothic Light", "Trajan Pro", "Palatino Linotype", Georgia, serif;
+  --bg: #110b13;
+  --card: #1c1321;
+  --card2: #170f1c;
+  --ink: #eadfcf;
+  --muted: #a8947f;
+  --line: #4a3550;
+  --line2: #2f2036;
+  --accent: #c0394b;
+  --accent-ink: #fff3ea;
+  --accent2: #c9a24b;
+  --good: #6fb37d;
+  --bad: #e0586a;
+  --field: #120b16;
+  --field-line: #4a3550;
+  --head-bg: #120b16;
+  --head-ink: #d9b866;
+  --head-rule: #c9a24b;
+  --seal-bg: radial-gradient(circle at 35% 30%, #e0586a, #a62c3d 60%, #701b29);
+  --seal-ink: #fff3ea;
+  --seal-ring: rgba(201, 162, 75, 0.6);
+  --shadow: 0 0 0 1px rgba(201, 162, 75, 0.12), 0 14px 30px -16px #000;
+  --top-bg: #0b070d;
+  --top-ink: #eadfcf;
+  --texture: radial-gradient(900px 500px at 50% -10%, rgba(192, 57, 75, 0.16), transparent 65%);
+  --texture-size: auto;
+  --bar-bg: #0e0812;
+  --hp: #c0394b;
+  --pp: #7a5cc0;
+  --radius: 2px;
+}
+html[data-theme="neon"] {
+  --font: "Cascadia Mono", Consolas, "SF Mono", Menlo, monospace;
+  --font-display: "Cascadia Mono", Consolas, "SF Mono", monospace;
+  --bg: #04050b;
+  --card: #0a0f1e;
+  --card2: #070b17;
+  --ink: #cfe9ff;
+  --muted: #6f8cb0;
+  --line: #1b3358;
+  --line2: #11213d;
+  --accent: #00e5ff;
+  --accent-ink: #001a1f;
+  --accent2: #ff3df0;
+  --good: #39ff9f;
+  --bad: #ff4d6d;
+  --field: #060a15;
+  --field-line: #1f3c66;
+  --head-bg: #0a0f1e;
+  --head-ink: #00e5ff;
+  --head-rule: #ff3df0;
+  --seal-bg: transparent;
+  --seal-ink: #00e5ff;
+  --seal-ring: #00e5ff;
+  --shadow: 0 0 0 1px rgba(0, 229, 255, 0.16), 0 0 24px -8px rgba(0, 229, 255, 0.35);
+  --top-bg: #02030a;
+  --top-ink: #cfe9ff;
+  --texture:
+    linear-gradient(rgba(0, 229, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 61, 240, 0.03) 1px, transparent 1px);
+  --texture-size: 32px 32px;
+  --bar-bg: #05080f;
+  --hp: #39ff9f;
+  --pp: #00e5ff;
+  --radius: 2px;
+}
+html[data-theme="escuro"] {
+  --bg: #0e1014;
+  --card: #161a21;
+  --card2: #1b2029;
+  --ink: #e6e8ee;
+  --muted: #8b93a3;
+  --line: #2a303c;
+  --line2: #222834;
+  --accent: #8ab4ff;
+  --accent-ink: #0c1424;
+  --accent2: #f2b36b;
+  --good: #5fcf94;
+  --bad: #ff7b7b;
+  --field: #11141a;
+  --field-line: #2e3542;
+  --head-bg: transparent;
+  --head-ink: #e6e8ee;
+  --head-rule: transparent;
+  --seal-bg: #232a38;
+  --seal-ink: #e6e8ee;
+  --seal-ring: #3a4457;
+  --shadow: 0 8px 24px -14px #000;
+  --top-bg: #0a0c10;
+  --top-ink: #e6e8ee;
+  --texture: none;
+  --bar-bg: #0e1116;
+  --hp: #5fcf94;
+  --pp: #8ab4ff;
+  --radius: 12px;
+}
+html[data-theme="claro"] {
+  --bg: #eceff3;
+  --card: #ffffff;
+  --card2: #f4f6f9;
+  --ink: #1c2330;
+  --muted: #6a7486;
+  --line: #d3d9e2;
+  --line2: #e4e8ee;
+  --accent: #2d5bd6;
+  --accent-ink: #fff;
+  --accent2: #d6772d;
+  --good: #1f8f55;
+  --bad: #cc3d3d;
+  --field: #f7f9fc;
+  --field-line: #cfd6e0;
+  --head-bg: transparent;
+  --head-ink: #1c2330;
+  --head-rule: transparent;
+  --seal-bg: #eaf0ff;
+  --seal-ink: #2d5bd6;
+  --seal-ring: #b8c9f5;
+  --shadow: 0 1px 2px rgba(20, 30, 50, 0.06), 0 8px 24px -16px rgba(20, 30, 50, 0.3);
+  --top-bg: #ffffff;
+  --top-ink: #1c2330;
+  --texture: none;
+  --bar-bg: #e4e8ee;
+  --hp: #1f8f55;
+  --pp: #2d5bd6;
+  --radius: 12px;
+}
+html[data-theme="caderno"] {
+  --font-display: "Segoe Print", "Bradley Hand", "Bradley Hand ITC", "Comic Sans MS", cursive;
+  --bg: #ece5cf;
+  --card: rgba(252, 249, 238, 0.92);
+  --card2: rgba(244, 238, 216, 0.9);
+  --ink: #1d2e57;
+  --muted: #6b7390;
+  --line: #b9b08f;
+  --line2: #d6ceb0;
+  --accent: #b8372f;
+  --accent-ink: #fff;
+  --accent2: #2a5db0;
+  --good: #2f7d4a;
+  --bad: #b8372f;
+  --field: rgba(255, 255, 255, 0.55);
+  --field-line: #c9c09c;
+  --head-bg: transparent;
+  --head-ink: #b8372f;
+  --head-rule: #b8372f;
+  --seal-bg: transparent;
+  --seal-ink: #b8372f;
+  --seal-ring: #b8372f;
+  --shadow: 0 2px 0 rgba(0, 0, 0, 0.05), 0 10px 18px -14px rgba(60, 50, 20, 0.5);
+  --top-bg: #1d2e57;
+  --top-ink: #fcf9ee;
+  --texture:
+    linear-gradient(
+      90deg,
+      transparent 63px,
+      rgba(184, 55, 47, 0.35) 63px,
+      rgba(184, 55, 47, 0.35) 65px,
+      transparent 65px
+    ),
+    repeating-linear-gradient(transparent 0 27px, rgba(42, 93, 176, 0.18) 27px 28px);
+  --texture-size: auto;
+  --bar-bg: #ddd5b8;
+  --hp: #2f7d4a;
+  --pp: #2a5db0;
+  --radius: 3px;
+}
+html[data-font="sans"] {
+  --font: "Segoe UI", system-ui, sans-serif;
+  --font-display: "Segoe UI", system-ui, sans-serif;
+}
+html[data-font="serif"] {
+  --font: Georgia, "Times New Roman", serif;
+  --font-display: Georgia, serif;
+}
+html[data-font="mono"] {
+  --font: "Cascadia Mono", Consolas, monospace;
+  --font-display: "Cascadia Mono", Consolas, monospace;
+}
+html[data-font="hand"] {
+  --font-display: "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
+}
+html[data-radius="0"] {
+  --radius: 0px;
+}
+html[data-radius="1"] {
+  --radius: 6px;
+}
+html[data-radius="2"] {
+  --radius: 14px;
+}
+html[data-dens="compact"] {
+  --gap: 8px;
+  --pad: 9px;
+}
+html[data-dens="roomy"] {
+  --gap: 20px;
+  --pad: 18px;
+}

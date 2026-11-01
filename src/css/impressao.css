@@ -1,0 +1,63 @@
+/* ===== Impressão ===== */
+#printroot {
+  display: none;
+}
+@media print {
+  body > *:not(#printroot) {
+    display: none !important;
+  }
+  body::before,
+  body::after {
+    display: none !important;
+  }
+  #printroot {
+    display: block;
+  }
+  body {
+    background: #fff;
+    color: #000;
+  }
+  #printroot .pg {
+    page-break-after: always;
+  }
+  .tabgrid {
+    grid-auto-rows: auto;
+  }
+  .card {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+  .blk {
+    break-inside: avoid;
+  }
+  #printroot .card > h3 {
+    background: #222 !important;
+    color: #fff !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .seal,
+  .bar i,
+  .chk i {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .etool,
+  .addrow,
+  .rowdel,
+  #dice-fab,
+  #dice {
+    display: none !important;
+  }
+}
+@media (max-width: 1000px) {
+  .blk {
+    grid-column: span 12 !important;
+  }
+  .cards {
+    --cc: 1 !important;
+  }
+  .split2 {
+    grid-template-columns: 1fr;
+  }
+}

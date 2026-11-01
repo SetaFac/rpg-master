@@ -1,0 +1,595 @@
+/* ===== Campos ===== */
+:where(
+  input:not([type="checkbox"]):not([type="color"]):not([type="range"]):not([type="file"]),
+  select,
+  textarea
+) {
+  background: var(--field);
+  color: var(--ink);
+  border: 1px solid var(--field-line);
+  border-radius: calc(var(--radius) - 1px);
+  padding: 4px 8px;
+  min-width: 0;
+}
+:where(select option) {
+  background: var(--card);
+  color: var(--ink);
+}
+.fgrid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 10px var(--gap);
+}
+.fld {
+  grid-column: span var(--s, 4);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.fld > label,
+.lab {
+  font-size: 0.76em;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+.in,
+.fld input[type="text"],
+.fld input[type="number"],
+.fld select,
+.fld textarea,
+.tbl input[type="text"],
+.tbl input[type="number"],
+.tbl select,
+.tbl textarea {
+  width: 100%;
+  background: var(--field);
+  border: 1px solid var(--field-line);
+  border-radius: calc(var(--radius) - 1px);
+  padding: 5px 8px;
+  min-width: 0;
+  transition:
+    border-color 0.12s,
+    box-shadow 0.12s;
+}
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--accent2);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent2) 28%, transparent);
+}
+textarea {
+  resize: vertical;
+  line-height: 1.4;
+}
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+  font-variant-numeric: tabular-nums;
+}
+input[type="number"]::-webkit-inner-spin-button {
+  opacity: 0;
+}
+input[type="number"]:hover::-webkit-inner-spin-button,
+input[type="number"]:focus::-webkit-inner-spin-button {
+  opacity: 1;
+}
+.fld.big input {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  padding: 3px 8px;
+}
+select {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 13px) 55%,
+    calc(100% - 8px) 55%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 22px !important;
+}
+.fld .calc {
+  padding: 5px 8px;
+  min-height: 31px;
+  border-bottom: 1px dashed var(--line);
+  font-variant-numeric: tabular-nums;
+}
+.tile {
+  text-align: center;
+  background: var(--card2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 6px 4px 8px;
+  position: relative;
+}
+.tile > label {
+  display: block;
+  font-size: 0.72em;
+  color: var(--muted);
+}
+.tile .calc {
+  border: 0;
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 600;
+  line-height: 1.1;
+  padding: 2px 0 0;
+  min-height: 0;
+}
+.tile .calc.txt {
+  font-size: 1.05rem;
+}
+.calc.roll {
+  cursor: pointer;
+}
+.calc.roll:hover {
+  color: var(--accent);
+  text-decoration: underline dotted;
+}
+.calc.err {
+  color: var(--bad);
+}
+.ovr {
+  width: 100%;
+  text-align: center;
+  border: 0 !important;
+  background: transparent !important;
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 600;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+.ovr::placeholder {
+  color: var(--ink);
+  opacity: 1;
+}
+.ovr:focus {
+  background: var(--field) !important;
+}
+
+/* checkbox personalizado */
+.chk {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  position: relative;
+  cursor: pointer;
+  flex: none;
+}
+.chk input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.chk i {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--field-line);
+  border-radius: calc(var(--radius) - 1px);
+  background: var(--field);
+  display: grid;
+  place-items: center;
+  transition: 0.12s;
+}
+.chk input:checked + i {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.chk input:checked + i::after {
+  content: "";
+  width: 5px;
+  height: 9px;
+  border: solid var(--accent-ink);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) translate(-1px, -1px);
+}
+.chk input:focus-visible + i {
+  outline: 2px solid var(--accent2);
+  outline-offset: 1px;
+}
+
+/* ===== Atributos (selos) ===== */
+.attrs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 12px;
+}
+.attr {
+  text-align: center;
+  background: var(--card2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 8px 6px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.attr .nm {
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  line-height: 1.1;
+}
+.attr .nm small {
+  display: block;
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 0.7em;
+}
+.seal {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: var(--seal-bg);
+  color: var(--seal-ink);
+  box-shadow:
+    inset 0 0 0 3px var(--seal-ring),
+    0 3px 6px -2px rgba(0, 0, 0, 0.4);
+  border: 0;
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  transition: transform 0.12s;
+  font-variant-numeric: tabular-nums;
+}
+html[data-theme="neon"] .seal,
+html[data-theme="caderno"] .seal {
+  box-shadow: none;
+  border: 2px solid var(--seal-ring);
+}
+html[data-theme="neon"] .seal {
+  text-shadow: 0 0 8px currentColor;
+  box-shadow:
+    0 0 14px -2px var(--seal-ring),
+    inset 0 0 12px -6px var(--seal-ring);
+}
+html[data-theme="caderno"] .seal {
+  border-radius: 46% 54% 50% 50% / 52% 46% 54% 48%;
+}
+.seal:hover {
+  transform: rotate(-6deg) scale(1.06);
+}
+.attr input {
+  width: 64px !important;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===== Recursos ===== */
+.res .head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.res .head .big {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+.res .big input {
+  width: 3.6ch !important;
+  min-width: 0;
+  border: 0 !important;
+  background: transparent !important;
+  font: inherit !important;
+  text-align: right;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+.res .big input:focus {
+  background: var(--field) !important;
+}
+.res .big small {
+  font-size: 0.55em;
+  color: var(--muted);
+}
+.res .tmp {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85em;
+  color: var(--muted);
+}
+.res .tmp input {
+  width: 56px !important;
+  text-align: center;
+  padding: 2px 4px !important;
+}
+.res .bar {
+  height: 14px;
+  margin: 6px 0 8px;
+}
+.res .ctl {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.res .ctl input {
+  width: 74px !important;
+  text-align: center;
+}
+.res details {
+  margin-top: 8px;
+}
+.res summary {
+  cursor: pointer;
+  font-size: 0.82em;
+  color: var(--muted);
+}
+.res .mm {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  font-size: 0.78em;
+  color: var(--muted);
+  margin-left: auto;
+}
+.res .mm input {
+  width: 62px !important;
+  padding: 2px 4px !important;
+  text-align: center;
+}
+
+/* ===== Tabelas (listas) ===== */
+.tbl {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.94em;
+}
+.tr {
+  display: grid;
+  gap: 6px;
+  align-items: center;
+  padding: 3px 0;
+  border-bottom: 1px solid var(--line2);
+  grid-template-columns: var(--cols);
+}
+.tr.th {
+  color: var(--muted);
+  font-size: 0.76em;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 4px;
+}
+.tr.grp {
+  grid-template-columns: 1fr;
+  font-family: var(--font-display);
+  color: var(--accent);
+  background: var(--card2);
+  padding: 3px 6px;
+  margin-top: 4px;
+  font-size: 0.92em;
+}
+.tr.dim {
+  opacity: 0.45;
+}
+.tr.ft {
+  font-weight: 600;
+  border-bottom: 0;
+  padding-top: 6px;
+}
+.tr .c {
+  min-width: 0;
+}
+.tr .c.ctr {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+.tr .lblc {
+  padding: 0 2px;
+}
+.tr .lblc.mut {
+  color: var(--muted);
+  font-size: 0.88em;
+}
+.tbl input[type="text"],
+.tbl input[type="number"],
+.tbl select {
+  padding: 3px 6px;
+}
+.tbl .num {
+  text-align: center;
+}
+.tbl .calc {
+  text-align: center;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.tbl .calc.roll {
+  background: var(--card2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 2px 4px;
+}
+.tbl .calc.roll:hover {
+  border-color: var(--accent2);
+}
+.split2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 22px;
+}
+.addrow {
+  margin-top: 8px;
+}
+.rowdel {
+  opacity: 0.35;
+}
+.tr:hover .rowdel {
+  opacity: 1;
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(var(--cc, 3), minmax(0, 1fr));
+  gap: var(--gap);
+}
+.cardi {
+  background: var(--card2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 8px 10px 10px;
+}
+.cardi .ch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  font-family: var(--font-display);
+}
+.cardi .ch b {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+.cardi .acts {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+.cardi.col .fgrid {
+  display: none;
+}
+.cardi.col .acts {
+  display: none;
+}
+.note p {
+  margin: 0 0 0.6em;
+  white-space: pre-wrap;
+}
+
+/* ===== Rolador ===== */
+#dice-fab {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 40;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 1.5rem;
+  box-shadow: 0 8px 20px -6px rgba(0, 0, 0, 0.55);
+  display: grid;
+  place-items: center;
+}
+#dice-fab:hover {
+  transform: rotate(18deg) scale(1.05);
+}
+#dice {
+  position: fixed;
+  right: 18px;
+  bottom: 84px;
+  z-index: 40;
+  width: 330px;
+  max-height: 70vh;
+  display: none;
+  flex-direction: column;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow:
+    var(--shadow),
+    0 18px 40px -12px rgba(0, 0, 0, 0.5);
+}
+#dice.open {
+  display: flex;
+}
+#dice .dh {
+  padding: 9px 12px;
+  font-family: var(--font-display);
+  background: var(--head-bg);
+  color: var(--head-ink);
+  border-bottom: 2px solid var(--head-rule);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0 0;
+}
+#dice .db {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+}
+.dq {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+.dq .btn {
+  justify-content: center;
+  padding: 5px 0;
+  font-variant-numeric: tabular-nums;
+}
+.seg {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.seg button {
+  border: 0;
+  background: var(--card2);
+  padding: 5px;
+  border-right: 1px solid var(--line);
+  font-size: 0.85em;
+}
+.seg button:last-child {
+  border-right: 0;
+}
+.seg button[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+#dlog {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 32vh;
+}
+.lg {
+  border-left: 3px solid var(--line);
+  padding: 3px 8px;
+  background: var(--card2);
+  font-size: 0.88em;
+}
+.lg b {
+  font-family: var(--font-display);
+  font-size: 1.15em;
+  float: right;
+}
+.lg small {
+  color: var(--muted);
+  display: block;
+}
+.lg.crit {
+  border-color: var(--accent2);
+}
+.lg.fail {
+  border-color: var(--bad);
+}

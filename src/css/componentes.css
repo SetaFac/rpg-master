@@ -1,0 +1,482 @@
+/* ===== Toast ===== */
+#toasts {
+  position: fixed;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  pointer-events: none;
+}
+.toast {
+  background: var(--head-bg, #222);
+  background-color: var(--top-bg);
+  color: var(--top-ink);
+  border: 1px solid var(--accent2);
+  border-radius: var(--radius);
+  padding: 8px 16px;
+  box-shadow: 0 10px 28px -8px rgba(0, 0, 0, 0.6);
+  animation: tin 0.18s ease-out;
+  pointer-events: auto;
+  max-width: 80vw;
+}
+.toast.roll {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 18px;
+}
+.toast.roll .n {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1;
+  min-width: 1.6ch;
+  text-align: center;
+  color: var(--accent2);
+}
+.toast.roll.crit .n {
+  color: #ffd34d;
+  text-shadow: 0 0 14px #ffb300;
+}
+.toast.roll.fail .n {
+  color: #ff6b6b;
+}
+.toast small {
+  display: block;
+  opacity: 0.75;
+}
+@keyframes tin {
+  from {
+    transform: translateY(10px) scale(0.96);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ===== Modal ===== */
+.ovl {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(5, 10, 15, 0.55);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  backdrop-filter: blur(2px);
+}
+.dlg {
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 30px 70px -20px rgba(0, 0, 0, 0.7);
+  width: min(560px, 100%);
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+}
+.dlg.wide {
+  width: min(980px, 100%);
+}
+.dlg.xl {
+  width: min(1200px, 100%);
+}
+.dlg > h3 {
+  padding: 11px 16px;
+  background: var(--head-bg);
+  color: var(--head-ink);
+  border-bottom: 2px solid var(--head-rule);
+  border-radius: calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0 0;
+  display: flex;
+}
+.dlg > h3 span {
+  flex: 1;
+}
+.dlg .db {
+  padding: 16px;
+  overflow: auto;
+  flex: 1;
+}
+.dlg .df {
+  padding: 10px 16px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  background: var(--card2);
+  border-radius: 0 0 calc(var(--radius) - 1px) calc(var(--radius) - 1px);
+}
+.dlg label.f {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 10px;
+  font-size: 0.86em;
+  color: var(--muted);
+}
+.dlg label.f input,
+.dlg label.f select,
+.dlg label.f textarea {
+  background: var(--field);
+  border: 1px solid var(--field-line);
+  border-radius: calc(var(--radius) - 1px);
+  padding: 6px 8px;
+  width: 100%;
+  color: var(--ink);
+}
+.dlg textarea.code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  min-height: 260px;
+  white-space: pre;
+}
+.row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.warn {
+  color: var(--bad);
+  font-size: 0.85em;
+}
+.okc {
+  color: var(--good);
+  font-size: 0.85em;
+}
+
+/* ===== Início ===== */
+.home {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px 18px 80px;
+}
+.hero {
+  padding: 34px 6px 26px;
+  display: grid;
+  gap: 8px;
+}
+.hero h1 {
+  font-size: clamp(2rem, 4.6vw, 3.3rem);
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+}
+.hero p {
+  max-width: 62ch;
+  color: var(--muted);
+  font-size: 1.05rem;
+  margin: 6px 0 0;
+}
+.sec-t {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  margin: 26px 0 10px;
+  padding-bottom: 5px;
+  border-bottom: 2px solid var(--head-rule, var(--line));
+}
+html[data-theme="escuro"] .sec-t,
+html[data-theme="claro"] .sec-t {
+  border-bottom-color: var(--line);
+}
+.cgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--gap);
+}
+.tcard {
+  text-align: left;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 120px;
+  transition:
+    transform 0.15s,
+    border-color 0.15s;
+  position: relative;
+}
+.tcard:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent2);
+}
+.tcard .ic {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--seal-bg);
+  color: var(--seal-ink);
+  box-shadow: inset 0 0 0 2px var(--seal-ring);
+  font-size: 1.15rem;
+}
+.tcard b {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+}
+.tcard span {
+  color: var(--muted);
+  font-size: 0.88em;
+}
+.tcard .x {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+}
+.tcard .pill {
+  align-self: flex-start;
+  font-size: 0.72em;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  padding: 0 8px;
+  color: var(--muted);
+}
+.empty {
+  border: 2px dashed var(--line);
+  border-radius: var(--radius);
+  padding: 26px;
+  text-align: center;
+  color: var(--muted);
+}
+body.drag::after {
+  content: "Solte o arquivo (.json, .xlsx) para importar";
+  display: grid !important;
+  place-items: center;
+  position: fixed;
+  inset: 0;
+  width: auto;
+  height: auto;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 1.6rem;
+  z-index: 200;
+  opacity: 1;
+  filter: none;
+}
+
+/* ===== Editor ===== */
+body.editing .blk > .card,
+body.editing .blk > .xcard {
+  outline: 2px dashed var(--accent2);
+  outline-offset: 2px;
+}
+.etool {
+  position: absolute;
+  right: 6px;
+  top: -14px;
+  z-index: 6;
+  display: none;
+  gap: 3px;
+  background: var(--top-bg);
+  padding: 3px;
+  border-radius: var(--radius);
+  box-shadow: 0 6px 14px -4px rgba(0, 0, 0, 0.5);
+}
+.etool .btn {
+  background: transparent;
+  color: var(--top-ink);
+  border-color: transparent;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  justify-content: center;
+}
+.etool .btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+body.editing .blk:hover .etool,
+body.editing .blk:focus-within .etool {
+  display: flex;
+}
+.blk.dragover > .card {
+  box-shadow: 0 0 0 3px var(--accent2);
+}
+.ebar {
+  background: var(--accent2);
+  color: #111;
+  padding: 6px 18px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 0.9em;
+}
+.ebar .btn {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: transparent;
+  color: #111;
+}
+.ed-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88em;
+}
+.ed-table th {
+  text-align: left;
+  color: var(--muted);
+  font-weight: 500;
+  padding: 3px 4px;
+  border-bottom: 1px solid var(--line);
+}
+.ed-table td {
+  padding: 2px 3px;
+  vertical-align: middle;
+}
+.ed-table input,
+.ed-table select {
+  width: 100%;
+  background: var(--field);
+  border: 1px solid var(--field-line);
+  border-radius: 3px;
+  padding: 3px 5px;
+  color: var(--ink);
+}
+.ed-table td.mono input {
+  font-family: var(--font-mono);
+}
+.addmenu {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.addmenu button {
+  text-align: left;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  background: var(--card2);
+  border-radius: var(--radius);
+  display: grid;
+  gap: 2px;
+}
+.addmenu button:hover {
+  border-color: var(--accent2);
+}
+.addmenu span {
+  color: var(--muted);
+  font-size: 0.82em;
+}
+
+/* ===== Grid importado do Excel ===== */
+.xgrid {
+  display: grid;
+  position: relative;
+  width: max-content;
+  max-width: none;
+}
+.xcard {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 10px;
+  overflow: auto;
+}
+.xc {
+  display: flex;
+  align-items: center;
+  padding: 1px 4px;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1.2;
+}
+.xc.l {
+  color: var(--ink);
+}
+.xc.ctr {
+  justify-content: center;
+  text-align: center;
+}
+.xc.r {
+  justify-content: flex-end;
+}
+.xc.b {
+  font-weight: 700;
+}
+.xc.wrap {
+  white-space: pre-wrap;
+}
+.xc:not(.wrap) > span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.xc.top {
+  align-items: flex-start;
+}
+.xc.bot {
+  align-items: flex-end;
+}
+.xc.fill-d {
+  background: var(--head-bg);
+  color: var(--head-ink);
+}
+.xc.fill-m {
+  background: var(--card2);
+}
+.xc.fill-l {
+  background: color-mix(in srgb, var(--card2) 55%, transparent);
+}
+.xc.bd {
+  border-color: var(--line);
+  border-style: solid;
+  border-width: 0;
+}
+.xc.in {
+  padding: 0;
+}
+.xc.in input[type="text"],
+.xc.in input[type="number"],
+.xc.in select,
+.xc.in textarea {
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--field-line);
+  background: var(--field);
+  border-radius: 2px;
+  padding: 0 4px;
+  font-size: 12px;
+  text-align: inherit;
+}
+.xc.cal {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  background: color-mix(in srgb, var(--accent2) 10%, transparent);
+}
+.xc.err {
+  color: var(--bad);
+}
+.xc.sel-edit {
+  cursor: pointer;
+  outline: 1px dotted var(--accent2);
+  outline-offset: -2px;
+}
+.xc.k-in {
+  box-shadow: inset 0 0 0 2px var(--good);
+}
+.xc.k-lb {
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.xc.k-ca {
+  box-shadow: inset 0 0 0 2px var(--accent2);
+}
+.xorig .xc.fill-d,
+.xorig .xc.fill-m,
+.xorig .xc.fill-l {
+  background: var(--bgc);
+  color: var(--fgc, inherit);
+}
+.xorig .xc {
+  color: var(--fgc, var(--ink));
+}
