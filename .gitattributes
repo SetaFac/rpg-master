@@ -1,0 +1,3 @@
+# Garante as quebras de linha corretas dos atalhos, em qualquer sistema
+*.sh  text eol=lf
+*.bat text eol=crlf

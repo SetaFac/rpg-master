@@ -1,0 +1,20 @@
+# Dependências (o projeto não usa nenhuma hoje, mas se um dia usar npm)
+node_modules/
+
+# Segredos e configurações locais (ex.: senha/chave do servidor)
+.env
+.env.*
+
+# Logs
+*.log
+
+# Pacotes e backups do projeto
+*.zip
+
+# Lixo do sistema operacional
+.DS_Store
+Thumbs.db
+
+# Configurações do editor
+.vscode/
+.idea/
