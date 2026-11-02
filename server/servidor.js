@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* RPG Master — servidor da mesa online (sem dependências; precisa só do Node.js 16+)
-   Uso:  node servidor.js [--porta 3000] [--chave ABC123] [--senha segredo] [--arquivo ../app/RPG-Master.html]            */
+   Uso:  node servidor.js [--porta 3000] [--chave ABC123] [--senha segredo] [--arquivo caminho/RPG-Master.html]            */
 const http = require('http'),
   fs = require('fs'),
   path = require('path'),
@@ -14,7 +14,32 @@ const args = process.argv.slice(2),
 const PORT = +arg('porta', process.env.PORT || 3000),
   KEY = arg('chave', crypto.randomBytes(3).toString('hex')),
   PASS = arg('senha', '');
-const HTML = arg('arquivo', path.join(__dirname, '..', 'app', 'RPG-Master.html'));
+/* Onde está o app? Ordem de prioridade:
+   1) --arquivo caminho/RPG-Master.html
+   2) variável de ambiente RPG_MASTER_HTML
+   3) busca automática: a partir da pasta deste script e da pasta onde o comando foi executado, olha em "PASTA_APP/"
+      e na própria pasta, subindo até NIVEIS_ACIMA pastas. A pasta mais próxima vence. */
+const NOME_HTML = 'RPG-Master.html';
+const PASTA_APP = 'src'; // nome da pasta onde fica o app (RPG-Master.html, css/, js/). Mudou o nome? Altere só aqui.
+const NIVEIS_ACIMA = 4;
+const ARQUIVO_INFORMADO = arg('arquivo', process.env.RPG_MASTER_HTML);
+function acharHtml() {
+  if (ARQUIVO_INFORMADO) return path.resolve(ARQUIVO_INFORMADO);
+  for (const inicio of [__dirname, process.cwd()]) {
+    let dir = path.resolve(inicio);
+    for (let nivel = 0; nivel <= NIVEIS_ACIMA; nivel++) {
+      for (const candidato of [path.join(dir, PASTA_APP, NOME_HTML), path.join(dir, NOME_HTML)]) {
+        if (fs.existsSync(candidato)) return candidato;
+      }
+      const pai = path.dirname(dir);
+      if (pai === dir) break;
+      dir = pai;
+    }
+  }
+  return null;
+}
+const HTML = acharHtml() || path.join(__dirname, '..', PASTA_APP, NOME_HTML); // sem achar nada, o aviso sai ao iniciar
+const HTML_OK = fs.existsSync(HTML);
 const PUBLIC_DIR = path.dirname(path.resolve(HTML)); // css/ e js/ são servidos a partir da pasta do HTML
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -107,7 +132,9 @@ http
       if (p === '/' || p === '/index.html') {
         if (!fs.existsSync(HTML)) {
           res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-          return res.end('Não achei o RPG-Master.html. Ele deve ficar em app/RPG-Master.html (ao lado da pasta servidor/).');
+          return res.end(
+            'Não achei o RPG-Master.html. Veja o aviso na janela do servidor ou inicie com --arquivo caminho/RPG-Master.html'
+          );
         }
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
         return fs.createReadStream(HTML).pipe(res);
@@ -261,6 +288,33 @@ http
   .listen(PORT, '0.0.0.0', () => {
     console.log('\n  ============  RPG Master — mesa online  ============\n');
     console.log('  Chave do mestre: ' + KEY + (PASS ? '   |   Senha dos jogadores: ' + PASS : ''));
+    if (HTML_OK) console.log('  App servido: ' + HTML);
+    else {
+      console.log(
+        '\n  ATENÇÃO: não achei o ' + (ARQUIVO_INFORMADO ? 'arquivo informado: ' + HTML : NOME_HTML + '.')
+      );
+      console.log(
+        '  Os endereços abaixo NÃO vão abrir o app (quem usa o arquivo .html local ainda consegue entrar na mesa).'
+      );
+      if (!ARQUIVO_INFORMADO) {
+        const inicios = [...new Set([__dirname, process.cwd()])];
+        console.log(
+          '  Procurei em "' +
+            PASTA_APP +
+            '/" e na própria pasta, subindo até ' +
+            NIVEIS_ACIMA +
+            ' pastas, a partir de:'
+        );
+        inicios.forEach(d => console.log('    ' + d));
+      }
+      console.log(
+        '  Para corrigir, inicie com:  node servidor.js --arquivo "caminho/para/' +
+          PASTA_APP +
+          '/' +
+          NOME_HTML +
+          '"'
+      );
+    }
     console.log('\n  Endereços para passar aos jogadores (use o da sua rede VPN, ex.: Radmin 26.x.x.x):');
     const l = ips();
     if (!l.length) console.log('   (nenhuma rede encontrada)');
