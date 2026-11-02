@@ -1,5 +1,53 @@
 /* Parte da Mesa virtual (renderVTT, em tela.js). As funções vtt*() recebem o contexto "ctx" criado em renderVTT. */
 
+/* Lista vertical de participantes da mesa online.
+   Cada participante ocupa uma linha inteira para evitar nomes agrupados/confusos. */
+function vttParticipantList(options = {}) {
+  const includeGM = options.includeGM !== false;
+  const markSelf = options.markSelf !== false;
+  const rows = [];
+
+  if (includeGM) {
+    rows.push(
+      h(
+        'div.vtt-participant' + (Net.gmOn ? '.online' : '.offline'),
+        h('span.vtt-participant-icon', '🎭'),
+        h(
+          'span.vtt-participant-name',
+          L3('Mestre', 'GM', 'Spielleiter') +
+            (Net.gmOn ? '' : ' (' + L3('ausente', 'away', 'abwesend') + ')')
+        ),
+        h('span.vtt-participant-status', Net.gmOn ? '●' : '○')
+      )
+    );
+  }
+
+  Net.players.forEach(name => {
+    const self = markSelf && Net.role === 'player' && name === Net.name;
+    rows.push(
+      h(
+        'div.vtt-participant.online' + (self ? '.self' : ''),
+        h('span.vtt-participant-icon', '👤'),
+        h(
+          'span.vtt-participant-name',
+          name + (self ? ' (' + L3('você', 'you', 'du') + ')' : '')
+        ),
+        h('span.vtt-participant-status', '●')
+      )
+    );
+  });
+
+  return h(
+    'div.vtt-participants',
+    rows.length
+      ? rows
+      : h(
+          'div.vtt-participant-empty',
+          L3('Nenhum jogador conectado.', 'No players connected.', 'Keine Spieler verbunden.')
+        )
+  );
+}
+
 function vttRenderSide(ctx) {
   const { S, side, R, renderSideRemote, renderSide, save, redraw, M, removeProp, removeTok, nextTurn } = ctx;
   const tk = S.sel && S.sc.tokens.find(k => k.id === S.sel);
@@ -7,6 +55,23 @@ function vttRenderSide(ctx) {
   if (R) {
     renderSideRemote();
     return;
+  }
+  if (Net.role === 'gm') {
+    side.append(
+      h(
+        'div.vtt-online-roster',
+        h(
+          'div.sec-t',
+          { style: { margin: '0 0 6px' } },
+          '🌐 ' +
+            L3('Jogadores conectados', 'Connected players', 'Verbundene Spieler') +
+            ' (' +
+            Net.players.length +
+            ')'
+        ),
+        vttParticipantList({ includeGM: false, markSelf: false })
+      )
+    );
   }
   const pr = S.selP && S.sc.props.find(k => k.id === S.selP);
   if (S.tool === 'terrain' || S.tool === 'prop') {
@@ -632,16 +697,7 @@ function vttRenderSideRemote(ctx) {
   );
   side.append(
     h('div.sec-t', { style: { margin: '14px 0 6px' } }, L3('Na mesa', 'At the table', 'Am Tisch')),
-    h('div.vtt-chips', [
-      h(
-        'span.pill',
-        { style: { background: Net.gmOn ? 'var(--good)' : 'var(--line)', color: '#fff' } },
-        '🎭 ' +
-          L3('Mestre', 'GM', 'Spielleiter') +
-          (Net.gmOn ? '' : ' (' + L3('ausente', 'away', 'abwesend') + ')')
-      ),
-      ...Net.players.map(n => h('span.pill', n === Net.name ? n + ' (' + L3('você', 'you', 'du') + ')' : n)),
-    ]),
+    vttParticipantList({ includeGM: true, markSelf: true }),
     h(
       'p.muted',
       { style: { fontSize: '.8em', marginTop: '12px' } },

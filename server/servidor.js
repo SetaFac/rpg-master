@@ -71,7 +71,8 @@ const toPlayers = o => players.forEach(p => p.res && send(p.res, o)),
   toAll = o => {
     toPlayers(o);
     toGM(o);
-  };
+  },
+  system = (event, extra = {}) => toAll({ type: 'system', event, ...extra, ts: Date.now() });
 const CORS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'Content-Type, x-key',
@@ -193,8 +194,11 @@ http
           toPlayers({ type: 'gm', on: true });
           req.on('close', () => {
             clearInterval(ka);
+            const hadGM = gms.size > 0;
             gms.delete(res);
-            toPlayers({ type: 'gm', on: gms.size > 0 });
+            const gmOn = gms.size > 0;
+            toPlayers({ type: 'gm', on: gmOn });
+            if (hadGM && !gmOn) system('gm-left');
           });
           return;
         }
@@ -206,10 +210,14 @@ http
         q.res = res;
         send(res, { type: 'hello', snap, players: names(), role: 'player', name: q.name, gm: gms.size > 0 });
         toAll({ type: 'players', list: names() });
+        system('player-joined', { name: q.name });
         req.on('close', () => {
           clearInterval(ka);
-          players.delete(u.searchParams.get('id'));
+          const id = u.searchParams.get('id');
+          const leaving = players.get(id);
+          players.delete(id);
           toAll({ type: 'players', list: names() });
+          if (leaving) system('player-left', { name: leaving.name });
           return;
         });
         return;

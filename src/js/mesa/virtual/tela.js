@@ -1009,11 +1009,13 @@ function renderVTT(sceneId, opts) {
       ...Net.chat
         .slice(-40)
         .map(m =>
-          h(
-            'div.' + (m.kind === 'roll' ? 'roll' : 'msg') + (m.gm ? '.gm' : ''),
-            h('b', m.from + ': '),
-            m.text
-          )
+          m.kind === 'system'
+            ? h('div.system', m.text)
+            : h(
+                'div.' + (m.kind === 'roll' ? 'roll' : 'msg') + (m.gm ? '.gm' : ''),
+                h('b', m.from + ': '),
+                m.text
+              )
         )
     );
     chatLog.scrollTop = 1e9;

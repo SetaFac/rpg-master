@@ -17,6 +17,7 @@ const Net = {
   last: '',
   bgSent: {},
   gmOn: false,
+  _lossNotified: false,
   clean(b) {
     b = String(b || '')
       .trim()
@@ -51,10 +52,16 @@ const Net = {
     this.status = 'connecting';
     es.onopen = () => {
       this.status = 'on';
+      this._lossNotified = false;
       this.emit();
     };
     es.onerror = () => {
+      const wasOn = this.status === 'on';
       this.status = es.readyState === 2 ? 'off' : 'reconnecting';
+      if (this.role === 'player' && wasOn && !this._lossNotified) {
+        this._lossNotified = true;
+        this.systemMessage('connection-lost');
+      }
       this.emit();
     };
     es.onmessage = ev => {
@@ -159,13 +166,56 @@ const Net = {
   leave() {
     this.close();
     const was = this.role;
+    const playersHook = this.hooks.players;
     this.role = null;
     this.scene = null;
     this.status = 'off';
     this.players = [];
+    this._lossNotified = false;
+
+    // Atualiza a interface imediatamente com a sessão já zerada.
+    // O hook de jogadores pertence à VTT aberta e precisa sobreviver ao
+    // desconectar/reconectar; caso contrário a lista só volta a renderizar
+    // quando outra ação (como trocar de mapa) força renderSide().
+    try {
+      playersHook && playersHook();
+      this.emit();
+    } catch (e) {}
+
+    // Hooks ligados à sessão podem ser descartados, mas mantemos o listener
+    // visual de jogadores enquanto a VTT continuar aberta. Isso cobre tanto
+    // desconexão quanto uma nova conexão do mestre na mesma tela.
     this.hooks = {};
-    this.emit();
+    if (typeof playersHook === 'function') this.hooks.players = playersHook;
     return was;
+  },
+  addChat(m) {
+    this.chat.push(m);
+    if (this.chat.length > 80) this.chat.shift();
+    this.hooks.chat && this.hooks.chat(m);
+  },
+  systemMessage(event, name, ts) {
+    const texts = {
+      'player-joined': () =>
+        L3(`${name} entrou na mesa.`, `${name} joined the table.`, `${name} ist dem Tisch beigetreten.`),
+      'player-left': () =>
+        L3(`${name} saiu da mesa.`, `${name} left the table.`, `${name} hat den Tisch verlassen.`),
+      'gm-left': () =>
+        L3(
+          'O mestre encerrou a conexão com a mesa.',
+          'The GM ended the connection to the table.',
+          'Der Spielleiter hat die Verbindung zum Tisch beendet.'
+        ),
+      'connection-lost': () =>
+        L3(
+          'A conexão com o servidor da mesa foi perdida.',
+          'The connection to the table server was lost.',
+          'Die Verbindung zum Tischserver wurde unterbrochen.'
+        ),
+    };
+    const make = texts[event];
+    if (!make) return;
+    this.addChat({ type: 'chat', kind: 'system', from: '', text: make(), ts: ts || Date.now() });
   },
   handle(m) {
     if (m.type === 'error') {
@@ -193,6 +243,10 @@ const Net = {
       this.hooks.players && this.hooks.players();
       return;
     }
+    if (m.type === 'system') {
+      this.systemMessage(m.event, m.name, m.ts);
+      return;
+    }
     if (m.type === 'snap') {
       this.onSnap(m.data);
       return;
@@ -211,9 +265,7 @@ const Net = {
       return;
     }
     if (m.type === 'chat') {
-      this.chat.push(m);
-      if (this.chat.length > 80) this.chat.shift();
-      this.hooks.chat && this.hooks.chat(m);
+      this.addChat(m);
       return;
     }
     if (m.type === 'snd' && this.role === 'player' && this.listen) {
@@ -351,6 +403,8 @@ function defaultBase() {
   return /^https?:$/.test(location.protocol) ? location.origin : 'http://localhost:3000';
 }
 function onlineDialogGM() {
+  const previousPlayersHook = Net.hooks.players;
+  let playersHook;
   const wrap = h('div'),
     base = h('input', { type: 'text', value: localStorage.getItem('rpgm.base') || defaultBase() }),
     key = h('input', {
@@ -368,6 +422,9 @@ function onlineDialogGM() {
       ),
     body: wrap,
     actions: [{ label: t('close') }],
+    onClose: () => {
+      if (Net.hooks.players === playersHook) Net.hooks.players = previousPlayersHook;
+    },
   });
   const draw = () => {
     if (Net.role === 'gm' && Net.es) {
@@ -404,10 +461,7 @@ function onlineDialogGM() {
             ')'
         ),
         Net.players.length
-          ? h(
-              'div.vtt-chips',
-              Net.players.map(n => h('span.pill', n))
-            )
+          ? vttParticipantList({ includeGM: false, markSelf: false })
           : h(
               'p.muted',
               L3(
@@ -494,9 +548,11 @@ function onlineDialogGM() {
       );
     }
   };
-  Net.hooks.players = () => {
+  playersHook = () => {
+    if (typeof previousPlayersHook === 'function') previousPlayersHook();
     if (document.body.contains(wrap)) draw();
   };
+  Net.hooks.players = playersHook;
   draw();
 }
 function joinDialog() {
