@@ -97,8 +97,9 @@ function renderVTT(sceneId, opts) {
   document.querySelectorAll('.pop, .ovl').forEach(p => p.remove());
   const V = R ? { scenes: [Net.scene], cur: Net.scene.id } : Store.data.vtt;
   if (!R && !V.scenes.length) {
-    V.scenes.push(vNewScene(L3('Cena 1', 'Scene 1', 'Szene 1'), 'masmorra'));
+    V.scenes.push(vNewScene(L3('Cena 1', 'Scene 1', 'Szene 1'), 'masmorra', 'medium'));
   }
+  V.scenes.forEach(vNormalizeSceneSize);
   if (sceneId) V.cur = sceneId;
   if (!V.scenes.find(s => s.id === V.cur)) V.cur = V.scenes[0].id;
   if (!R) Store.save();
@@ -107,6 +108,7 @@ function renderVTT(sceneId, opts) {
     tool: 'move',
     sel: null,
     brush: 1,
+    measWidth: 1,
     view: { x: 0, y: 0, z: 1 },
     drag: null,
     meas: null,
@@ -450,43 +452,115 @@ function renderVTT(sceneId, opts) {
     }
     const me = X ? null : S.meas;
     if (me) {
-      const dx = me.x1 - me.x0,
-        dy = me.y1 - me.y0,
-        d = Math.hypot(dx, dy) / u,
-        dist = (d * sc.grid.unit).toFixed(1).replace(/\.0$/, '') + ' ' + sc.grid.unitName;
+      const fmt = n => (+n.toFixed(1)).toString(),
+        unitDist = cells => fmt(cells * sc.grid.unit) + ' ' + sc.grid.unitName,
+        drawLabel = (lab, x, y) => {
+          const fs = 15 / v.z;
+          g.font = `700 ${fs}px system-ui, sans-serif`;
+          g.textAlign = 'center';
+          const tw = g.measureText(lab).width + 14 / v.z;
+          g.fillStyle = 'rgba(0,0,0,.8)';
+          g.fillRect(x - tw / 2, y - fs * 2.4, tw, fs * 1.6);
+          g.fillStyle = '#ffd34d';
+          g.textBaseline = 'middle';
+          g.fillText(lab, x, y - fs * 1.6);
+        };
       g.lineWidth = 4 / v.z;
       g.strokeStyle = '#ffd34d';
       g.fillStyle = 'rgba(255,211,77,.18)';
-      if (me.kind === 'circle') {
+      g.lineJoin = 'round';
+      g.lineCap = 'round';
+
+      if (me.kind === 'path') {
+        const pts = me.points || [];
+        if (pts.length > 1) {
+          let lenPx = 0;
+          for (let i = 1; i < pts.length; i++) lenPx += Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y);
+          const widthCells = me.width || 1,
+            lenCells = lenPx / u;
+          g.save();
+          g.beginPath();
+          g.moveTo(pts[0].x, pts[0].y);
+          for (let i = 1; i < pts.length; i++) g.lineTo(pts[i].x, pts[i].y);
+          g.strokeStyle = 'rgba(255,211,77,.20)';
+          g.lineWidth = widthCells * u;
+          g.stroke();
+          g.strokeStyle = '#ffd34d';
+          g.lineWidth = 3 / v.z;
+          g.stroke();
+          g.restore();
+          const last = pts[pts.length - 1];
+          drawLabel(
+            L3('largura ', 'width ', 'Breite ') +
+              fmt(widthCells) +
+              ' ' +
+              L3('casas', 'sq', 'Felder') +
+              ' · ' +
+              L3('comprimento ', 'length ', 'Länge ') +
+              fmt(lenCells) +
+              ' · ' +
+              unitDist(lenCells),
+            last.x,
+            last.y
+          );
+        }
+      } else {
+        const dx = me.x1 - me.x0,
+          dy = me.y1 - me.y0,
+          d = Math.hypot(dx, dy) / u;
+        if (me.kind === 'circle') {
+          g.beginPath();
+          g.arc(me.x0, me.y0, Math.hypot(dx, dy), 0, Math.PI * 2);
+          g.fill();
+          g.stroke();
+        } else if (me.kind === 'rect') {
+          g.beginPath();
+          g.rect(me.x0, me.y0, dx, dy);
+          g.fill();
+          g.stroke();
+        } else if (me.kind === 'cone') {
+          const len = Math.hypot(dx, dy),
+            ux = len ? dx / len : 1,
+            uy = len ? dy / len : 0,
+            px = -uy,
+            py = ux,
+            half = len / 2,
+            ax = me.x1 + px * half,
+            ay = me.y1 + py * half,
+            bx = me.x1 - px * half,
+            by = me.y1 - py * half;
+          g.beginPath();
+          g.moveTo(me.x0, me.y0);
+          g.lineTo(ax, ay);
+          g.lineTo(bx, by);
+          g.closePath();
+          g.fill();
+          g.stroke();
+        }
+
         g.beginPath();
-        g.arc(me.x0, me.y0, Math.hypot(dx, dy), 0, 7);
-        g.fill();
+        g.moveTo(me.x0, me.y0);
+        g.lineTo(me.x1, me.y1);
         g.stroke();
+        g.fillStyle = '#ffd34d';
+        g.beginPath();
+        g.arc(me.x0, me.y0, 5 / v.z, 0, Math.PI * 2);
+        g.fill();
+
+        let lab;
+        if (me.kind === 'circle') {
+          lab = L3('raio ', 'radius ', 'Radius ') + fmt(d) + ' ' + L3('casas', 'sq', 'Felder') + ' · ' + unitDist(d);
+        } else if (me.kind === 'rect') {
+          const w = Math.abs(dx) / u,
+            h = Math.abs(dy) / u;
+          lab = fmt(w) + ' × ' + fmt(h) + ' ' + L3('casas', 'sq', 'Felder') + ' · ' + fmt(w * h) + ' ' + L3('de área', 'area', 'Fläche');
+        } else if (me.kind === 'cone') {
+          lab = L3('alcance ', 'range ', 'Reichweite ') + fmt(d) + ' ' + L3('casas', 'sq', 'Felder') + ' · ' + unitDist(d);
+        } else {
+          lab = fmt(d) + ' ' + L3('casas', 'sq', 'Felder') + ' · ' + unitDist(d);
+        }
+        drawLabel(lab, me.x1, me.y1);
       }
-      g.beginPath();
-      g.moveTo(me.x0, me.y0);
-      g.lineTo(me.x1, me.y1);
-      g.stroke();
-      g.fillStyle = '#ffd34d';
-      g.beginPath();
-      g.arc(me.x0, me.y0, 5 / v.z, 0, 7);
-      g.fill();
-      const lab =
-          (me.kind === 'circle' ? L3('raio ', 'radius ', 'Radius ') : '') +
-          d.toFixed(1).replace(/\.0$/, '') +
-          ' ' +
-          L3('casas', 'sq', 'Felder') +
-          ' · ' +
-          dist,
-        fs = 15 / v.z;
-      g.font = `700 ${fs}px system-ui, sans-serif`;
-      g.textAlign = 'center';
-      const tw = g.measureText(lab).width + 14 / v.z;
-      g.fillStyle = 'rgba(0,0,0,.8)';
-      g.fillRect(me.x1 - tw / 2, me.y1 - fs * 2.4, tw, fs * 1.6);
-      g.fillStyle = '#ffd34d';
-      g.textBaseline = 'middle';
-      g.fillText(lab, me.x1, me.y1 - fs * 1.6);
     }
   }
   const animScene = () =>
@@ -588,8 +662,13 @@ function renderVTT(sceneId, opts) {
       redraw();
       return;
     }
-    if (S.tool === 'ruler' || S.tool === 'circle') {
-      S.meas = { kind: S.tool === 'circle' ? 'circle' : 'line', x0: p.x, y0: p.y, x1: p.x, y1: p.y };
+    if (['ruler', 'circle', 'rect', 'cone', 'path'].includes(S.tool)) {
+      if (S.tool === 'path') {
+        S.meas = { kind: 'path', points: [{ x: p.x, y: p.y }], width: S.measWidth || 1 };
+      } else {
+        const kind = S.tool === 'ruler' ? 'line' : S.tool;
+        S.meas = { kind, x0: p.x, y0: p.y, x1: p.x, y1: p.y };
+      }
       S.drag = { kind: 'meas' };
       redraw();
       return;
@@ -685,8 +764,15 @@ function renderVTT(sceneId, opts) {
       S.view.y = d.vy - (e.clientY - d.sy) / S.view.z;
       redraw();
     } else if (d.kind === 'meas') {
-      S.meas.x1 = p.x;
-      S.meas.y1 = p.y;
+      if (S.meas && S.meas.kind === 'path') {
+        const pts = S.meas.points,
+          last = pts[pts.length - 1],
+          minStep = Math.max(4, (S.sc.cell || 64) / 10);
+        if (!last || Math.hypot(p.x - last.x, p.y - last.y) >= minStep) pts.push({ x: p.x, y: p.y });
+      } else if (S.meas) {
+        S.meas.x1 = p.x;
+        S.meas.y1 = p.y;
+      }
       redraw();
     } else if (d.kind === 'fog') paintFog(p, d.add);
     else if (d.kind === 'terr') paintTerr(p);
@@ -796,6 +882,9 @@ function renderVTT(sceneId, opts) {
     } else if (e.key.toLowerCase() === 'v') setTool('move');
     else if (e.key.toLowerCase() === 'r') setTool('ruler');
     else if (e.key.toLowerCase() === 'o') setTool('circle');
+    else if (e.key.toLowerCase() === 'q') setTool('rect');
+    else if (e.key.toLowerCase() === 'c') setTool('cone');
+    else if (e.key.toLowerCase() === 'u') setTool('path');
     else if (e.key.toLowerCase() === 't') setTool('terrain');
     else if (e.key.toLowerCase() === 'b') setTool('prop');
     else if (e.key.toLowerCase() === 'p') present(!isPresent());
@@ -829,7 +918,7 @@ function renderVTT(sceneId, opts) {
   function setTool(tl) {
     S.tool = tl;
     renderSide();
-    if (tl !== 'ruler' && tl !== 'circle') S.meas = null;
+    if (!['ruler', 'circle', 'rect', 'cone', 'path'].includes(tl)) S.meas = null;
     syncBar();
     canvas.style.cursor = tl === 'move' ? '' : 'crosshair';
     redraw();
@@ -950,7 +1039,8 @@ function renderVTT(sceneId, opts) {
       type: 'text',
       placeholder: L3('Ex.: Porto de Loguetown', 'E.g. Harbor town', 'z. B. Hafenstadt'),
     });
-    let pre = 'masmorra';
+    let pre = 'masmorra',
+      sizePreset = 'medium';
     const sel = h(
       'select',
       BG_ORDER.map(id => h('option', { value: id }, tr(BGS[id].n)))
@@ -958,11 +1048,19 @@ function renderVTT(sceneId, opts) {
     sel.onchange = () => {
       pre = sel.value;
     };
+    const sizeSel = h(
+      'select',
+      { onchange: e => (sizePreset = e.target.value) },
+      h('option', { value: 'small' }, L3('Pequeno — 20 × 20', 'Small — 20 × 20', 'Klein — 20 × 20')),
+      h('option', { value: 'medium', selected: true }, L3('Médio — 40 × 40', 'Medium — 40 × 40', 'Mittel — 40 × 40')),
+      h('option', { value: 'large' }, L3('Grande — 80 × 80', 'Large — 80 × 80', 'Groß — 80 × 80'))
+    );
     modal({
       title: L3('Nova cena', 'New scene', 'Neue Szene'),
       body: h(
         'div',
         h('label.f', L3('Nome', 'Name', 'Name'), nm),
+        h('label.f', L3('Tamanho do mapa', 'Map size', 'Kartengröße'), sizeSel),
         h('label.f', L3('Ambiente inicial', 'Starting environment', 'Start-Umgebung'), sel)
       ),
       actions: [
@@ -971,7 +1069,7 @@ function renderVTT(sceneId, opts) {
           label: t('add'),
           primary: true,
           onClick: () => {
-            const s = vNewScene(nm.value.trim(), sel.value);
+            const s = vNewScene(nm.value.trim(), sel.value, sizePreset);
             V.scenes.push(s);
             Store.save();
             renderVTT(s.id);

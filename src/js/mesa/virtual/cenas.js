@@ -1,11 +1,73 @@
 /* ---- dados ---- */
 const V_ROLE = { pj: '#3aa76d', npc: '#d9a93b', inimigo: '#d1473d' };
-function vNewScene(name, preset) {
+const V_MAP_SIZES = { small: 20, medium: 40, large: 80 };
+function vSceneSizePreset(cols, rows) {
+  for (const [id, size] of Object.entries(V_MAP_SIZES)) if (cols === size && rows === size) return id;
+  return 'custom';
+}
+function vNormalizeSceneSize(sc) {
+  const cell = Math.max(24, +sc.cell || 64);
+  if (!sc.sizePreset && +sc.cols === 30 && +sc.rows === 20) {
+    sc.cols = 40;
+    sc.rows = 40;
+  }
+  if (!Number.isFinite(+sc.cols) || +sc.cols < 5)
+    sc.cols = sc.bg && sc.bg.kind === 'img' && sc.bg.w ? Math.max(5, Math.ceil(sc.bg.w / cell)) : 40;
+  if (!Number.isFinite(+sc.rows) || +sc.rows < 5)
+    sc.rows = sc.bg && sc.bg.kind === 'img' && sc.bg.h ? Math.max(5, Math.ceil(sc.bg.h / cell)) : 40;
+  sc.cols = Math.round(+sc.cols);
+  sc.rows = Math.round(+sc.rows);
+  sc.sizePreset = vSceneSizePreset(sc.cols, sc.rows);
+  return sc;
+}
+function vResizeScene(sc, cols, rows) {
+  cols = Math.max(5, Math.min(160, Math.round(+cols || 40)));
+  rows = Math.max(5, Math.min(160, Math.round(+rows || 40)));
+  sc.cols = cols;
+  sc.rows = rows;
+  sc.sizePreset = vSceneSizePreset(cols, rows);
+  sc.tokens = sc.tokens || [];
+  sc.props = sc.props || [];
+  sc.terr = sc.terr || {};
+  sc.fog = sc.fog || { on: false, rev: {} };
+  sc.fog.rev = sc.fog.rev || {};
+  sc.tokens.forEach(tk => {
+    const sz = tk.s || 1;
+    tk.x = Math.max(0, Math.min(cols - sz, tk.x || 0));
+    tk.y = Math.max(0, Math.min(rows - sz, tk.y || 0));
+  });
+  sc.props.forEach(pr => {
+    const sz = pr.s || 1;
+    pr.x = Math.max(0, Math.min(cols - sz, pr.x || 0));
+    pr.y = Math.max(0, Math.min(rows - sz, pr.y || 0));
+  });
+  sc.terr = Object.fromEntries(
+    Object.entries(sc.terr).filter(([key]) => {
+      const [x, y] = key.split(',').map(Number);
+      return x >= 0 && y >= 0 && x < cols && y < rows;
+    })
+  );
+  sc.fog.rev = Object.fromEntries(
+    Object.entries(sc.fog.rev).filter(([key]) => {
+      const [x, y] = key.split(',').map(Number);
+      return x >= 0 && y >= 0 && x < cols && y < rows;
+    })
+  );
+  if (typeof vCache !== 'undefined') {
+    vCache.base = {};
+    vCache.comp = {};
+  }
+  return sc;
+}
+function vNewScene(name, preset, sizePreset) {
+  const sp = V_MAP_SIZES[sizePreset] ? sizePreset : 'medium';
+  const size = V_MAP_SIZES[sp];
   return {
     id: uid(),
     name: name || L3('Nova cena', 'New scene', 'Neue Szene'),
-    cols: 30,
-    rows: 20,
+    cols: size,
+    rows: size,
+    sizePreset: sp,
     cell: 64,
     bg: { kind: 'preset', preset: preset || 'masmorra', tint: '#4466aa', tintA: 0, dark: 0 },
     grid: { on: true, color: '#ffffff', alpha: 0.22, snap: true, unit: 1.5, unitName: 'm' },
@@ -44,7 +106,7 @@ async function exportScene(sc) {
   );
 }
 async function importScene(o, then) {
-  const sc = o.scene;
+  const sc = vNormalizeSceneSize(o.scene);
   sc.id = uid();
   sc.terr = sc.terr || {};
   sc.props = (sc.props || []).map(k => ({ ...k, id: uid() }));

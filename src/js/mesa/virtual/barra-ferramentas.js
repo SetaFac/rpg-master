@@ -137,7 +137,84 @@ function vttSyncBar(ctx) {
       h('div.sep'),
       tb('move', '✋', L3('Mover (V)', 'Move (V)', 'Bewegen (V)')),
       tb('ruler', '📏', L3('Régua (R)', 'Ruler (R)', 'Lineal (R)')),
-      tb('circle', '⭕', L3('Área circular (O)', 'Circle area (O)', 'Kreisfläche (O)')),
+      h(
+        'details',
+        { style: { position: 'relative' } },
+        h(
+          'summary.btn.sm' + (['circle', 'rect', 'cone', 'path'].includes(S.tool) ? '.primary' : ''),
+          {
+            title: L3(
+              'Ferramentas de área: círculo, retângulo, cone e faixa curva',
+              'Area tools: circle, rectangle, cone and curved strip',
+              'Flächenwerkzeuge: Kreis, Rechteck, Kegel und gebogener Streifen'
+            ),
+            style: { listStyle: 'none', cursor: 'pointer', userSelect: 'none' },
+          },
+          '📐 ' + L3('Áreas', 'Areas', 'Flächen')
+        ),
+        h(
+          'div.card',
+          {
+            style: {
+              position: 'absolute',
+              top: 'calc(100% + 6px)',
+              left: '0',
+              zIndex: 80,
+              minWidth: '220px',
+              padding: '6px',
+              display: 'grid',
+              gap: '4px',
+            },
+          },
+          [
+            ['circle', '⭕', L3('Área circular (O)', 'Circle area (O)', 'Kreisfläche (O)')],
+            ['rect', '▭', L3('Área retangular (Q)', 'Rectangle area (Q)', 'Rechteckfläche (Q)')],
+            ['cone', '◢', L3('Área em cone (C)', 'Cone area (C)', 'Kegelfläche (C)')],
+            ['path', '〰️', L3('Faixa curva (U)', 'Curved strip (U)', 'Gebogener Streifen (U)')],
+          ].map(([id, icon, label]) =>
+            h(
+              'button.btn.sm' + (S.tool === id ? '.primary' : ''),
+              {
+                type: 'button',
+                title: label,
+                style: { width: '100%', justifyContent: 'flex-start' },
+                onclick: () => setTool(id),
+              },
+              icon + ' ' + label
+            )
+          ),
+          S.tool === 'path'
+            ? h(
+                'label',
+                {
+                  style: {
+                    display: 'grid',
+                    gridTemplateColumns: '1fr auto',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '4px 2px 0',
+                  },
+                },
+                h('span.muted', {}, L3('Largura', 'Width', 'Breite')),
+                h(
+                  'select',
+                  {
+                    'aria-label': L3('Largura da faixa curva', 'Curved strip width', 'Breite des gebogenen Streifens'),
+                    title: L3('Largura da faixa em casas', 'Strip width in squares', 'Streifenbreite in Feldern'),
+                    onchange: e => {
+                      S.measWidth = +e.target.value;
+                      if (S.meas && S.meas.kind === 'path') S.meas.width = S.measWidth;
+                      redraw();
+                    },
+                  },
+                  [0.5, 1, 1.5, 2, 3, 4, 5, 6].map(n =>
+                    h('option', { value: n, selected: S.measWidth === n }, n + ' ' + L3('casas', 'sq', 'Felder'))
+                  )
+                )
+              )
+            : null
+        )
+      ),
       h('div.sep'),
       tb(
         'terrain',

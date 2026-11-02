@@ -406,9 +406,8 @@ const BG_ORDER = [
 ];
 const vCache = { base: {}, comp: {}, img: {}, thumb: {} };
 function vMapSize(sc) {
+  vNormalizeSceneSize(sc);
   const u = sc.cell || 64;
-  if (sc.bg.kind === 'img' && sc.bg.w)
-    return { w: sc.bg.w, h: sc.bg.h, cols: Math.ceil(sc.bg.w / u), rows: Math.ceil(sc.bg.h / u) };
   return { w: sc.cols * u, h: sc.rows * u, cols: sc.cols, rows: sc.rows };
 }
 function vBgBase(sc, onload) {

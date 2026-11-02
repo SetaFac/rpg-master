@@ -72,6 +72,8 @@ function vttLibraryDialog(ctx) {
                 ? L3('cor', 'color', 'Farbe')
                 : tr((BGS[sc.bg.preset] || BGS.masmorra).n)) +
               ' · ' +
+              sc.cols + '×' + sc.rows +
+              ' · ' +
               Object.keys(sc.terr || {}).length +
               ' ' +
               L3('terreno', 'terrain', 'Gelände') +

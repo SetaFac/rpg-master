@@ -88,7 +88,6 @@ function vttSceneDialog(ctx) {
             const r = await vPickBg();
             if (!r) return;
             sc.bg = { ...sc.bg, kind: 'img', imgId: r.id, w: r.w, h: r.h };
-            sc.cell = Math.max(24, Math.round(r.w / 24));
             sc.fog.rev = {};
             fit();
             upd(() => {
@@ -246,27 +245,66 @@ function vttSceneDialog(ctx) {
           })
         )
       ),
-      sc.bg.kind !== 'img'
-        ? h(
-            'div.row2',
-            h(
-              'label.f',
-              L3('Colunas', 'Columns', 'Spalten'),
-              num(0, 'cols', sc, 5, 120, 1, () => {
-                sc.fog.rev = {};
-                upd();
-              })
-            ),
-            h(
-              'label.f',
-              L3('Linhas', 'Rows', 'Zeilen'),
-              num(0, 'rows', sc, 5, 120, 1, () => {
-                sc.fog.rev = {};
-                upd();
-              })
-            )
+      h('div.sec-t', { style: { margin: '12px 0 6px' } }, '🗺 ' + L3('Dimensões do mapa', 'Map dimensions', 'Kartengröße')),
+      h(
+        'div.row2',
+        h(
+          'label.f',
+          L3('Tamanho', 'Size', 'Größe'),
+          h(
+            'select',
+            {
+              onchange: e => {
+                const id = e.target.value;
+                if (V_MAP_SIZES[id]) {
+                  vResizeScene(sc, V_MAP_SIZES[id], V_MAP_SIZES[id]);
+                  S.dirtyFog = true;
+                  Store.save();
+                  fit();
+                  redraw();
+                  body2();
+                }
+              },
+            },
+            h('option', { value: 'small', selected: sc.sizePreset === 'small' }, L3('Pequeno — 20 × 20', 'Small — 20 × 20', 'Klein — 20 × 20')),
+            h('option', { value: 'medium', selected: sc.sizePreset === 'medium' }, L3('Médio — 40 × 40', 'Medium — 40 × 40', 'Mittel — 40 × 40')),
+            h('option', { value: 'large', selected: sc.sizePreset === 'large' }, L3('Grande — 80 × 80', 'Large — 80 × 80', 'Groß — 80 × 80')),
+            sc.sizePreset === 'custom' ? h('option', { value: 'custom', selected: true }, L3('Personalizado', 'Custom', 'Benutzerdefiniert')) : null
           )
-        : null,
+        ),
+        h(
+          'div.muted',
+          { style: { alignSelf: 'end', paddingBottom: '8px', fontSize: '.86em' } },
+          L3('O fundo é ajustado à área da cena.', 'The background fits the scene area.', 'Der Hintergrund wird an die Szenenfläche angepasst.')
+        )
+      ),
+      h(
+        'div.row2',
+        h(
+          'label.f',
+          L3('Colunas', 'Columns', 'Spalten'),
+          num(0, 'cols', sc, 5, 160, 1, () => {
+            vResizeScene(sc, sc.cols, sc.rows);
+            S.dirtyFog = true;
+            Store.save();
+            fit();
+            redraw();
+            body2();
+          })
+        ),
+        h(
+          'label.f',
+          L3('Linhas', 'Rows', 'Zeilen'),
+          num(0, 'rows', sc, 5, 160, 1, () => {
+            vResizeScene(sc, sc.cols, sc.rows);
+            S.dirtyFog = true;
+            Store.save();
+            fit();
+            redraw();
+            body2();
+          })
+        )
+      ),
       h(
         'div.row2',
         h(
